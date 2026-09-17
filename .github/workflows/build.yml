@@ -13,20 +13,29 @@ jobs:
 
       - name: Download Apache Flex SDK
         run: |
-          wget https://dlcdn.apache.org/flex/4.16.1/binaries/apache-flex-sdk-4.16.1-bin.tar.gz
-          tar -xzf apache-flex-sdk-4.16.1-bin.tar.gz
+          wget -q \
+            https://dlcdn.apache.org/flex/4.16.1/binaries/apache-flex-sdk-4.16.1-bin.tar.gz
 
-      - name: Install Flash SDK dependencies
+          mkdir flex-sdk
+
+          tar -xzf apache-flex-sdk-4.16.1-bin.tar.gz \
+            -C flex-sdk \
+            --strip-components=1
+
+      - name: Install PlayerGlobal 32.0
         run: |
-          cd apache-flex-sdk-4.16.1-bin
-          ant -f installer.xml \
-            -Dflash.sdk.version=32.0 \
-            -Dair.donot.ask=true
+          mkdir -p flex-sdk/frameworks/libs/player/32.0
+
+          wget -q \
+            https://fpdownload.macromedia.com/get/flashplayer/updaters/32/playerglobal32_0.swc \
+            -O flex-sdk/frameworks/libs/player/32.0/playerglobal.swc
 
       - name: Compile SWF
         run: |
           mkdir -p flash
-          apache-flex-sdk-4.16.1-bin/bin/mxmlc \
+
+          flex-sdk/bin/mxmlc \
+            -target-player=32.0 \
             -output=flash/demo.swf \
             -default-size 800 600 \
             -default-frame-rate 30 \
