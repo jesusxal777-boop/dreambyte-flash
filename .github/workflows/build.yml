@@ -1,1 +1,39 @@
- 
+name: Build Flash SWF
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download Apache Flex SDK
+        run: |
+          wget https://dlcdn.apache.org/flex/4.16.1/binaries/apache-flex-sdk-4.16.1-bin.tar.gz
+          tar -xzf apache-flex-sdk-4.16.1-bin.tar.gz
+
+      - name: Install Flash SDK dependencies
+        run: |
+          cd apache-flex-sdk-4.16.1-bin
+          ant -f installer.xml \
+            -Dflash.sdk.version=32.0 \
+            -Dair.donot.ask=true
+
+      - name: Compile SWF
+        run: |
+          mkdir -p flash
+          apache-flex-sdk-4.16.1-bin/bin/mxmlc \
+            -output=flash/demo.swf \
+            -default-size 800 600 \
+            -default-frame-rate 30 \
+            src/Main.as
+
+      - name: Upload SWF
+        uses: actions/upload-artifact@v4
+        with:
+          name: dreambyte-flash
+          path: flash/demo.swf
