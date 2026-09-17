@@ -13,8 +13,7 @@ jobs:
 
       - name: Download Apache Flex SDK
         run: |
-          wget -q \
-            https://dlcdn.apache.org/flex/4.16.1/binaries/apache-flex-sdk-4.16.1-bin.tar.gz
+          wget -q https://dlcdn.apache.org/flex/4.16.1/binaries/apache-flex-sdk-4.16.1-bin.tar.gz
 
           mkdir flex-sdk
 
@@ -22,15 +21,17 @@ jobs:
             -C flex-sdk \
             --strip-components=1
 
-      - name: Install PlayerGlobal 32.0
+      - name: Download PlayerGlobal
         run: |
-          mkdir -p flex-sdk/frameworks/libs/player/32.0
+          mkdir -p playerglobal/32.0
 
           wget -q \
             https://fpdownload.macromedia.com/get/flashplayer/updaters/32/playerglobal32_0.swc \
-            -O flex-sdk/frameworks/libs/player/32.0/playerglobal.swc
+            -O playerglobal/32.0/playerglobal.swc
 
       - name: Compile SWF
+        env:
+          PLAYERGLOBAL_HOME: ${{ github.workspace }}/playerglobal
         run: |
           mkdir -p flash
 
